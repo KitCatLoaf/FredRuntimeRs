@@ -1,0 +1,2 @@
+print("It's fred runtime, yo! And we're on this version: " .. fred.version())
+print("Oh, and this platform: " .. fred.platform())

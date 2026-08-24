@@ -1,0 +1,11 @@
+[package]
+name = "fredRuntime"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+mlua = { version = "0.9", features = ["lua54", "vendored"] }
+
+[[bin]]
+name = "fred"
+path = "src/main.rs"
