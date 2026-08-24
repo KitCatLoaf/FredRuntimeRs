@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 mlua = { version = "0.9", features = ["lua54", "vendored"] }
+chrono = "0.4"
 
 [[bin]]
 name = "fred"
