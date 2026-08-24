@@ -12,8 +12,8 @@ Currently, it is in it's beginner stages of rewriting.
 - To install, you will need to download Rust.
   - You can download Rust [here](https://rustup.rs/)
 - Install all files from repository
-- Navigate into the folder with the `main.rs` file. 
-- Run `cargo install --path . --force` to add fred to path
+- Navigate into the FredRuntime root folder. 
+- Run `cargo install --path . --force` to add fred to path and build
 
 ## USAGE
 - To use, simply run `fred` in the terminal after adding to path.
