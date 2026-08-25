@@ -17,22 +17,35 @@ Source: "target\release\fred.exe"; DestDir: "{app}"; Flags: ignoreversion restar
 Name: envPath; Description: "Add Fred Runtime to system PATH"; Flags: unchecked
 
 [Code]
+// Helper to safely delete conflicting files
+procedure SafeDelete(FilePath: string);
+begin
+  if (FilePath <> '') and FileExists(FilePath) then
+  begin
+    DeleteFile(FilePath);
+  end;
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 var
-  OldPath, NewPath, UserHome, CargoPath: string;
+  OldPath, NewPath, UserHome, LocalAppData: string;
 begin
   if CurStep = ssInstall then
   begin
-    // Safely retrieve the user profile path using GetEnv
     UserHome := GetEnv('USERPROFILE');
+    LocalAppData := GetEnv('LOCALAPPDATA');
+
+    // Clean up known legacy conflict locations
     if UserHome <> '' then
     begin
-      CargoPath := UserHome + '\.cargo\bin\fred.exe';
-      if FileExists(CargoPath) then
-      begin
-        DeleteFile(CargoPath);
-      end;
+      SafeDelete(UserHome + '\.cargo\bin\fred.exe');
     end;
+    if LocalAppData <> '' then
+    begin
+      SafeDelete(LocalAppData + '\Programs\Fred\fred.exe');
+    end;
+    SafeDelete('C:\FredRuntime\fred\build\fred.exe');
+    SafeDelete('C:\Program Files (x86)\FredRuntime\fred.exe');
   end;
 
   if (CurStep = ssPostInstall) and IsTaskSelected('envPath') then
@@ -41,6 +54,7 @@ begin
     begin
       if Pos(ExpandConstant('{app}'), OldPath) = 0 then
       begin
+        // Prepend to PATH so Program Files takes priority over everything else
         NewPath := ExpandConstant('{app}') + ';' + OldPath;
         RegWriteStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', NewPath);
       end;
