@@ -2,6 +2,7 @@ pub mod core;
 pub mod time;
 pub mod io;
 pub mod fs;
+pub mod http;
 
 use mlua::{Lua, Result};
 
@@ -11,6 +12,7 @@ pub fn setup(lua: &Lua) -> Result<()> {
     time::register(lua, &fred_table)?;
     io::register(lua, &fred_table)?;
     fs::register(lua, &fred_table)?;
+    http::register(lua, &fred_table)?;
     lua.globals().set("fred", fred_table)?;
     Ok(())
 }
