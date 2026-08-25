@@ -1,3 +1,4 @@
 print("It's fred runtime, yo! And we're on this version: " .. fred.version())
 print("Oh, and this platform: " .. fred.platform())
 print("Can't forget this time!: " .. fred.date("%h:%M:%S"))
+fred.read("Press any button to quit.")
