@@ -19,15 +19,19 @@ Name: envPath; Description: "Add Fred Runtime to system PATH"; Flags: unchecked
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);
 var
-  OldPath, NewPath, CargoPath: string;
+  OldPath, NewPath, UserHome, CargoPath: string;
 begin
   if CurStep = ssInstall then
   begin
-    // Delete old legacy cargo binary if present so PATH conflict is impossible
-    CargoPath := ExpandConstant('{userprofile}\.cargo\bin\fred.exe');
-    if FileExists(CargoPath) then
+    // Safely retrieve the user profile path using GetEnv
+    UserHome := GetEnv('USERPROFILE');
+    if UserHome <> '' then
     begin
-      DeleteFile(CargoPath);
+      CargoPath := UserHome + '\.cargo\bin\fred.exe';
+      if FileExists(CargoPath) then
+      begin
+        DeleteFile(CargoPath);
+      end;
     end;
   end;
 
@@ -37,7 +41,6 @@ begin
     begin
       if Pos(ExpandConstant('{app}'), OldPath) = 0 then
       begin
-        // Prepend to PATH so Program Files takes priority over cargo
         NewPath := ExpandConstant('{app}') + ';' + OldPath;
         RegWriteStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', NewPath);
       end;
