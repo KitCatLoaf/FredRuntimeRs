@@ -1,46 +1,89 @@
-mod library;
+pub const FRED_VERSION: &str = "2.0-ALPHA";
 
 use mlua::Lua;
 use std::env;
 use std::fs;
+use std::process::exit;
 
-pub const FRED_VERSION: &str = "2.0-ALPHA";
+mod library;
 
-fn main() {
+fn main() -> mlua::Result<()> {
     let args: Vec<String> = env::args().collect();
+    let lua = Lua::new();
 
-    if args.len() < 2 {
-        println!("Fred Runtime v{}", FRED_VERSION);
-        println!("Run 'fred -h' for usage.");
-        return;
-    }
+    library::setup(&lua)?;
 
-    let command = args[1].to_lowercase();
-    match command.as_str() {
-        "-v" | "--version" => {
-            println!("Fred Runtime v{}", FRED_VERSION);
-        }
-        "-h" | "--help" => {
-            println!("USAGE:");
-            println!("  fred <file.frd>   Run Fred script");
-            println!("  fred -v           Show Version");
-        }
-        _ => {
-            let filename = &args[1];
-            match fs::read_to_string(filename) {
-                Ok(code) => {
-                    let lua = Lua::new();
-
-                    if let Err(err) = library::setup(&lua) {
-                        eprintln!("Failed to setup Fred Runtime Globals: {}", err);
-                    } else if let Err(err) = lua.load(&code).exec() {
-                        eprintln!("Fred Runtime Error: {}", err);
+    if args.len() > 1 {
+        match args[1].as_str() {
+            "--fred" => {
+                lua.load(r#"
+                    print(fred.color(fred.style("IT IS ME MY CHILD.", "bold"), "red"))
+                "#).exec()?;
+                exit(0);
+            }
+            "--pleh" => {
+                lua.load(r#"
+                    local lines = {
+                        "",
+                        fred.version(),
+                        "",
+                        "Usage:",
+                        "  fred <file.frd>            Run Fred (.frd) file",
+                        "  fred compile <file.lua>    Compile Lua to .frd",
+                        "  fred -h, --help            Show this help menu",
+                        "  fred -v, --version         Show version",
+                        "  fred -l, --log             View the latest update log",
+                        "",
                     }
+                    for i = #lines, 1, -1 do
+                        print(string.reverse(lines[i]))
+                    end
+                "#).exec()?;
+                exit(0);
+            }
+            "-v" | "--version" => {
+                lua.load(r#"print("\n" .. fred.version())"#).exec()?;
+                exit(0);
+            }
+            "-l" | "--log" => {
+                lua.load(r#"
+                    print("\nUpdate Log:\n\n- Rewrite FredRuntime to rust\n- Feature complete for previous fred files")
+                "#).exec()?;
+                exit(0);
+            }
+            "-h" | "--help" => {
+                println!("\nUsage:");
+                println!("  fred <file.frd>            Run Fred (.frd) file");
+                println!("  fred compile <file.lua>    Compile Lua to .frd");
+                println!("  fred -h, --help            Show this help menu");
+                println!("  fred -v, --version         Show version");
+                println!("  fred -l, --log             View the latest update log\n");
+                exit(0);
+            }
+            "compile" => {
+                if args.len() > 2 {
+                    let lua_file = &args[2];
+                    let frd_file = lua_file.replace(".lua", ".frd");
+                    if let Ok(content) = fs::read_to_string(lua_file) {
+                        let _ = fs::write(&frd_file, content);
+                        println!("Compiled {} -> {}", lua_file, frd_file);
+                    } else {
+                        eprintln!("Error: Could not read file '{}'", lua_file);
+                    }
+                } else {
+                    eprintln!("Usage: fred compile <file.lua>");
                 }
-                Err(err) => {
-                    eprintln!("COULD NOT READ '{}': {}", filename, err);
+                exit(0);
+            }
+            path => {
+                if let Err(e) = lua.load(fs::read_to_string(path).unwrap_or_default()).exec() {
+                    eprintln!("Fred Runtime Error: {}", e);
                 }
+                exit(0);
             }
         }
     }
+
+    println!("Fred Runtime 2.0-ALPHA. Use 'fred -h' for options.");
+    Ok(())
 }
