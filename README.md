@@ -1,23 +1,40 @@
 # Fred Runtime Rust
 
-Hello! This is the second version of Fred Runtime, now rewritten in Rust. The original can be found at [Fred Runtime](https://github.com/KitCatLoaf/FredRuntime) but it is now depracated. 
+Hello! This is the second version of Fred Runtime, now rewritten in Rust. The original can be found at [Fred Runtime](https://github.com/KitCatLoaf/FredRuntime) but it is now deprecated. 
 
 This new version will be written from the ground up in the Rust language.
 
 Just as last time, this is an experimental project meant for fun and not for serious use. I am a beginner and am creating this for fun.
 
-Currently, it is in it's beginner stages of rewriting.
+Fred Runtime Rust is now the full replacement as it is feature complete and compatible with all previous fred code. It is now fully rewritten! Enjoy.
 
 ## INSTALL
-- To install, you will need to download Rust.
-  - You can download Rust [here](https://rustup.rs/)
-- Install all files from repository
-- Navigate into the FredRuntime root folder. 
-- Run `cargo install --path . --force` to add fred to path and build
+- To install, you will need to run your OS specific installer
+  - Linux
+    - Navigate into `fredRuntime/installer`
+    - run `./linux_install.sh`
+    - If needed, run with sudo permission
+  - Windows
+    - Navigate into `fredRuntime/Output`
+    - Run FredSetup.exe
+  - MacOS
+    - No.
 
+## MANUAL BUILD
+  - Install [Rust](https://rustup.rs/)
+  - Building
+    - To build to path automatically, run `cargo install --path . --force`
+    - To build the release version, run `cargo build --release`
+    - To compile FredSetup.exe, download [Inno Setup](https://jrsoftware.org/isdl.php)
+      - Open `installer.iss` and compile
+  
 ## USAGE
-- To use, simply run `fred` in the terminal after adding to path.
-- Use `fred -h` for usage.
+  - To use FredRuntime, simply run fred -h after installing with the above!
 
-## DISCLAIMER:
-Again, Fred Runtime Rust is in it's early stages and will not be feature complete until later. The Rust version will eventually support all original syntax and run effectively the same, just via Rust. A way to install the project without installing Rust and manually building is planned for the future. For now, enjoy! This is the earliest alpha version of Fred Runtime Rust.
+FredRuntimeRust is a feature complete alternative to the now deprecate FredRuntime. All code written for the original FredRuntime program should be fully compatible with FredRuntimeRust. 
+
+### FredRuntime v2.1-ALPHA LOG:
+- Full, feature complete rewrite into rust of Fred Runtime.
+- All libraries including core, fs, io, and time implemented.
+- `fred.sleep()` implemented into time library
+  - Argument taken in milliseconds
