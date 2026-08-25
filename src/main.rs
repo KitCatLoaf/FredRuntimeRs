@@ -1,4 +1,4 @@
-pub const FRED_VERSION: &str = "2.0-ALPHA";
+pub const FRED_VERSION: &str = "2.1-ALPHA";
 
 use mlua::Lua;
 use std::env;
@@ -84,6 +84,6 @@ fn main() -> mlua::Result<()> {
         }
     }
 
-    println!("Fred Runtime 2.0-ALPHA. Use 'fred -h' for options.");
+    println!("Fred Runtime {}. Use 'fred -h' for options.", FRED_VERSION);
     Ok(())
 }

@@ -8,15 +8,17 @@ Compression=lzma2
 SolidCompression=yes
 OutputBaseFilename=FredSetup
 
+; Ensure running instances are closed before updating
+CloseApplications=yes
+RestartApplications=no
+
 [Files]
-; Path to your compiled Rust binary
-Source: "target\release\fred.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "target\release\fred.exe"; DestDir: "{app}"; Flags: ignoreversion restartreplace
 
 [Tasks]
 Name: envPath; Description: "Add Fred Runtime to system PATH"; Flags: unchecked
 
 [Code]
-// Helper function to append the installation directory to the user's PATH environment variable
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   OldPath: string;
