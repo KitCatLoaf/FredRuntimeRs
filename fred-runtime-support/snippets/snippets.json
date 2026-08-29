@@ -1,0 +1,36 @@
+{
+  "Fred Script Setup": {
+    "prefix": "fredinit",
+    "body": [
+      "print(fred.color(\"Running script on Fred Runtime v\" .. fred.version(), \"green\"))",
+      "",
+      "$0"
+    ],
+    "description": "Initialize a Fred Runtime script header"
+  },
+  "Read File Safely": {
+    "prefix": "frdread",
+    "body": [
+      "local content, err = fred.fs.read(\"${1:path/to/file.txt}\")",
+      "if not content then",
+      "    print(fred.color(\"Error reading file: \" .. err, \"red\"))",
+      "    fred.exit()",
+      "end",
+      "$0"
+    ],
+    "description": "Read file with error handling"
+  },
+  "HTTP GET Request": {
+    "prefix": "frdget",
+    "body": [
+      "local res, err = fred.http.get(\"${1:https://api.example.com}\")",
+      "if res and res.status == 200 then",
+      "    print(res.body)",
+      "else",
+      "    print(fred.color(\"HTTP Request failed: \" .. (err or res.status), \"red\"))",
+      "end",
+      "$0"
+    ],
+    "description": "Perform an HTTP GET request"
+  }
+}

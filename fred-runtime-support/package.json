@@ -1,0 +1,53 @@
+{
+  "name": "fred-runtime-support",
+  "displayName": "Fred Runtime Support",
+  "description": "Autocomplete, diagnostics, and language support for Fred Runtime (.frd) scripts.",
+  "version": "1.0.0",
+  "publisher": "evelyn",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "lua",
+        "extensions": [
+          ".frd"
+        ],
+        "aliases": [
+          "Fred Script",
+          "frd"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "lua": {
+      "target": {
+        "version": "Lua 5.4"
+      }
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Fred Runtime",
+      "properties": {
+        "Lua.workspace.userThirdParty": {
+          "type": "array",
+          "default": [
+            "${extensionPath}/library"
+          ],
+          "description": "Path to Fred Runtime API type annotations."
+        }
+      }
+    },
+    "snippets": [
+      {
+        "language": "lua",
+        "path": "./snippets/snippets.json"
+      }
+    ]
+  }
+}

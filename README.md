@@ -20,6 +20,13 @@ Fred Runtime Rust is now the full replacement as it is feature complete and comp
   - MacOS
     - No.
 
+- Helper extension
+  - VS Code installation
+    - Hit `ctrl+shift+p`
+    - Search for "Install Extension by .VSIX"
+    - Navigate to `fredRuntime/fred-runtime-support`
+    - Install fred-runtime-support-1.0.0.vsix
+
 ## MANUAL BUILD
   - Install [Rust](https://rustup.rs/)
   - Building
@@ -33,8 +40,6 @@ Fred Runtime Rust is now the full replacement as it is feature complete and comp
 
 FredRuntimeRust is a feature complete alternative to the now deprecate FredRuntime. All code written for the original FredRuntime program should be fully compatible with FredRuntimeRust. 
 
-### FredRuntime v2.1-ALPHA LOG:
-- Full, feature complete rewrite into rust of Fred Runtime.
-- All libraries including core, fs, io, and time implemented.
-- `fred.sleep()` implemented into time library
-  - Argument taken in milliseconds
+### FredRuntime v2.3-ALPHA LOG:
+- Folder Support to the FileSystem library
+- Fred Runtime Helper extension for syntax

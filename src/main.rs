@@ -1,4 +1,4 @@
-pub const FRED_VERSION: &str = "2.1-ALPHA";
+pub const FRED_VERSION: &str = "2.3-ALPHA";
 
 use mlua::Lua;
 use std::env;
@@ -47,7 +47,7 @@ fn main() -> mlua::Result<()> {
             }
             "-l" | "--log" => {
                 lua.load(r#"
-                    print("\nUpdate Log:\n\n- Rewrite FredRuntime to rust\n- Feature complete for previous fred files")
+                    print("\nUpdate Log:\n\n- Allow folder support for FileSystem lib\n- New VS Code helper extension")
                 "#).exec()?;
                 exit(0);
             }
