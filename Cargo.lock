@@ -209,6 +209,7 @@ dependencies = [
  "chrono",
  "mlua",
  "reqwest",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
