@@ -8,7 +8,11 @@ mlua = { version = "0.9", features = ["lua54", "vendored"] }
 chrono = "0.4"
 reqwest = { version = "0.11", features = ["blocking", "json"] }
 walkdir = "2.4"
+winres = "0.1"
 
 [[bin]]
 name = "fred"
 path = "src/main.rs"
+
+[build-dependencies]
+winres = "0.1"

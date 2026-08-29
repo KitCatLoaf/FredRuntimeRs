@@ -1,63 +1,64 @@
 [Setup]
 AppName=Fred Runtime
 AppVersion=2.0-ALPHA
+AppPublisher=Fred Runtime Project
 DefaultDirName={autopf}\FredRuntime
 DefaultGroupName=Fred Runtime
-UninstallDisplayIcon={app}\fred.exe
+OutputBaseFilename=fredsetup
 Compression=lzma2
 SolidCompression=yes
-OutputBaseFilename=FredSetup
-CloseApplications=yes
-RestartApplications=no
+; Tells Windows Explorer to refresh file icons immediately upon finishing install
+ChangesAssociations=yes
+; Optional installer executable icon
+SetupIconFile=src\icon\fred.ico
 
-[Files]
-Source: "target\release\fred.exe"; DestDir: "{app}"; Flags: ignoreversion restartreplace
+PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
+
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: envPath; Description: "Add Fred Runtime to system PATH"; Flags: unchecked
+Name: "addtopath"; Description: "Add Fred Runtime to System PATH"; Flags: unchecked
+Name: "vscodeext"; Description: "Install Fred Runtime VS Code Extension"; Flags: checkedonce
+
+[Files]
+; Copy the main binary (with embedded icon)
+Source: "target\release\fred.exe"; DestDir: "{app}"; Flags: ignoreversion
+; Copy VS Code extension package if built
+Source: "vscode-extension\fred-runtime-support-1.0.0.vsix"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+
+[Registry]
+; 1. Register .frd File Extension
+Root: HKCU; Subkey: "Software\Classes\.frd"; ValueType: string; ValueData: "FredRuntimeScript"; Flags: uninsdeletevalue
+
+; 2. Define ProgID details
+Root: HKCU; Subkey: "Software\Classes\FredRuntimeScript"; ValueType: string; ValueData: "Fred Runtime Script"; Flags: uninsdeletekey
+
+; 3. Use Icon Index 0 from fred.exe for .frd files
+Root: HKCU; Subkey: "Software\Classes\FredRuntimeScript\DefaultIcon"; ValueType: string; ValueData: "{app}\fred.exe,0"
+
+; 4. Set Double-Click execution action
+Root: HKCU; Subkey: "Software\Classes\FredRuntimeScript\shell\open\command"; ValueType: string; ValueData: """{app}\fred.exe"" ""%1"""
+
+; Optional: Add {app} to User PATH
+Root: HKCU; Subkey: "Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Tasks: addtopath; Check: NeedsAddPath('{app}')
+
+[Run]
+; Auto-install VS Code extension if selected and VS Code is installed on user machine
+[Run]
+Filename: "code"; Parameters: "--install-extension ""{app}\fred-runtime-support-1.0.0.vsix"" --force"; Tasks: vscodeext; Flags: runhidden skipifdoesntexist; StatusMsg: "Installing VS Code Extension..."
 
 [Code]
-// Helper to safely delete conflicting files
-procedure SafeDelete(FilePath: string);
-begin
-  if (FilePath <> '') and FileExists(FilePath) then
-  begin
-    DeleteFile(FilePath);
-  end;
-end;
-
-procedure CurStepChanged(CurStep: TSetupStep);
+// Helper function to check if directory is already in user PATH
+function NeedsAddPath(Param: string): Boolean;
 var
-  OldPath, NewPath, UserHome, LocalAppData: string;
+  OrigPath: string;
 begin
-  if CurStep = ssInstall then
+  if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', OrigPath) then
   begin
-    UserHome := GetEnv('USERPROFILE');
-    LocalAppData := GetEnv('LOCALAPPDATA');
-
-    // Clean up known legacy conflict locations
-    if UserHome <> '' then
-    begin
-      SafeDelete(UserHome + '\.cargo\bin\fred.exe');
-    end;
-    if LocalAppData <> '' then
-    begin
-      SafeDelete(LocalAppData + '\Programs\Fred\fred.exe');
-    end;
-    SafeDelete('C:\FredRuntime\fred\build\fred.exe');
-    SafeDelete('C:\Program Files (x86)\FredRuntime\fred.exe');
+    Result := True;
+    Exit;
   end;
-
-  if (CurStep = ssPostInstall) and IsTaskSelected('envPath') then
-  begin
-    if RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', OldPath) then
-    begin
-      if Pos(ExpandConstant('{app}'), OldPath) = 0 then
-      begin
-        // Prepend to PATH so Program Files takes priority over everything else
-        NewPath := ExpandConstant('{app}') + ';' + OldPath;
-        RegWriteStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', NewPath);
-      end;
-    end;
-  end;
+  Result := Pos(';' + UpperCase(Param) + ';', ';' + UpperCase(OrigPath) + ';') = 0;
 end;
